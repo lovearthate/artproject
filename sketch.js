@@ -1,45 +1,59 @@
+let numSegments = 10,
+  x = [],
+  y = [],
+  angle = [],
+  segLength = 26,
+  targetX,
+  targetY;
 
-let message = 'hover over the artwork here*',
-  font,
-  bounds, // holds x, y, w, h of the text's bounding box
-  fontsize = 60,
-  x,
-  y; // x and y coordinates of the text
-
-function preload() {
-  font = loadFont('assets/SourceSansPro-Regular.otf');
+for (let i = 0; i < numSegments; i++) {
+  x[i] = 0;
+  y[i] = 0;
+  angle[i] = 0;
 }
 
 function setup() {
   createCanvas(710, 400);
+  strokeWeight(20);
+  stroke(255, 100);
 
-  // set up the font
-  textFont(font);
-  textSize(fontsize);
-
-  // get the width and height of the text so we can center it initially
-  bounds = font.textBounds(message, 0, 0, fontsize);
-  x = width / 2 - bounds.w / 2;
-  y = height / 2 - bounds.h / 2;
+  x[x.length - 1] = width / 2; // Set base x-coordinate
+  y[x.length - 1] = height; // Set base y-coordinate
 }
 
 function draw() {
-  background(204, 120);
+  background(0);
 
-  // write the text in black and get its bounding box
-  fill(0);
-  text(message, x, y);
-  bounds = font.textBounds(message, x, y, fontsize);
-
-  // check if the mouse is inside the bounding box and tickle if so
-  if (
-    mouseX >= bounds.x &&
-    mouseX <= bounds.x + bounds.w &&
-    mouseY >= bounds.y &&
-    mouseY <= bounds.y + bounds.h
-  ) {
-    x += random(-5, 20);
-    y += random(-5, 9);
+  reachSegment(0, mouseX, mouseY);
+  for (let i = 1; i < numSegments; i++) {
+    reachSegment(i, targetX, targetY);
+  }
+  for (let j = x.length - 1; j >= 1; j--) {
+    positionSegment(j, j - 1);
+  }
+  for (let k = 0; k < x.length; k++) {
+    segment(x[k], y[k], angle[k], (k + 1) * 2);
   }
 }
 
+function positionSegment(a, b) {
+  x[b] = x[a] + cos(angle[a]) * segLength;
+  y[b] = y[a] + sin(angle[a]) * segLength;
+}
+
+function reachSegment(i, xin, yin) {
+  const dx = xin - x[i];
+  const dy = yin - y[i];
+  angle[i] = atan2(dy, dx);
+  targetX = xin - cos(angle[i]) * segLength;
+  targetY = yin - sin(angle[i]) * segLength;
+}
+
+function segment(x, y, a, sw) {
+  strokeWeight(sw);
+  push();
+  translate(x, y);
+  rotate(a);
+  line(0, 0, segLength, 0);
+  pop();
+}
