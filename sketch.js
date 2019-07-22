@@ -1,15 +1,4 @@
-function setup() {
-  createCanvas(500, 500);
-}
 
-function draw() {
-  if (mouseIsPressed) {
-    fill(0);
-  } else {
-    fill(255);
-  }
-  ellipse(mouseX, mouseY, 30, 80);
-};
 let message = 'hover over the artwork here*',
   font,
   bounds, // holds x, y, w, h of the text's bounding box
